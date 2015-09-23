@@ -23,12 +23,12 @@ What ?
 **angular-typescript** provides annotation like decorators:
 
 ```
-@at.service(moduleName: string, serviceName: string)
+@at.service(module string|angular.IModule, serviceName?: string)
 @at.inject(dependencyOne: string, ...dependencies?: string[])
-@at.controller(moduleName: string, controllerName: string)
-@at.directive(moduleName: string, directiveName: string)
-@at.classFactory(moduleName: string, className: string)
-@at.resource(moduleName: string, resourceClassName: string)
+@at.controller(module: string|angular.IModule, controllerName?: string)
+@at.directive(module: string|angular.IModule, directiveName?: string)
+@at.classFactory(module: string|angular.IModule, className?: string)
+@at.resource(module: string|angular.IModule, resourceClassName?: string)
 ```
 
 Why ?
