@@ -7,10 +7,16 @@ describe 'annotations:', ->
   describe '@directive (with @inject)', ->
     $scope = null
     element = null
+    element2 = null
+    element3 = null
+    element4 = null
 
     beforeEach inject ($compile, $rootScope) ->
       $scope = $rootScope.$new()
       element = $compile('<at-test-component></at-test-component>')($scope)
+      element2 = $compile('<test-component2></test-component2>')($scope)
+      element3 = $compile('<div test-component3></div>')($scope)
+      element4 = $compile('<div class="test-component4"></div>')($scope)
       $rootScope.$digest()
 
     it 'should be defined', ->
@@ -44,5 +50,17 @@ describe 'annotations:', ->
 
       expect element.text()
       .toBe $scope.name + $scope.ctrl.name
+
+    it 'should execute directive to correct dom', ->
+
+      expect element2.html()
+      .toBe 'Test Component2'
+
+      expect element3.html()
+      .toBe 'Test Component3'
+
+      expect element4.html()
+      .toBe 'Test Component4'
+
 
 

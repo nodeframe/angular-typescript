@@ -8,6 +8,16 @@ module at {
     type ResourceClass = angular.resource.IResourceClass<any>;
     type ResourceService = angular.resource.IResourceService;
 
+    function implicitClassName(target: any): string {
+        let funcNameRegex: any = /function (.{1,})\(/,
+            results: any[] = (funcNameRegex).exec(target.toString());
+        return results[1];
+    }
+
+    function getModule(module: string | angular.IModule): angular.IModule {
+        return ((typeof module === 'string') ? angular.module(module) : module);
+    }
+
     /* istanbul ignore next */
     function combineResource(instance: any, model?: any): void {
         angular.extend(instance, instance.$_Resource(model));
@@ -39,10 +49,10 @@ module at {
     }
 
     export interface IResourceAnnotation {
-        (moduleName: string, className: string): IClassAnnotationDecorator;
+        (module: string | angular.IModule, className?: string): IClassAnnotationDecorator;
     }
 
-    export function resource(moduleName: string, className: string): IClassAnnotationDecorator {
+    export function resource(module: string|angular.IModule, className: string): IClassAnnotationDecorator {
         return (target: any): void => {
             function resourceClassFactory($resource: ResourceService, ...args: any[]): any {
                 const newResource: ResourceClass = $resource(target.url, target.params, target.actions, target.options);
@@ -55,7 +65,7 @@ module at {
                 })), ...args);
             }
             resourceClassFactory.$inject = (['$resource']).concat(target.$inject /* istanbul ignore next */ || []);
-            angular.module(moduleName).factory(className, resourceClassFactory);
+            getModule(module).factory(className || implicitClassName(target), resourceClassFactory);
         };
     }
     /* tslint:enable:no-any */

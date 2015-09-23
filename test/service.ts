@@ -18,4 +18,19 @@ module test {
 
     }
 
+    let testModule: angular.IModule = angular.module('test');
+    @service(testModule)
+    export class TestServiceWithoutClassName {
+
+        public static $inject: string[] = ['$http', '$filter', '$compile'];
+
+        constructor(
+            /* tslint:disable:variable-name */
+            private $$http: angular.IHttpService,
+            private $$parse: angular.IParseService
+        /* tslint:enable:variable-name */
+        ) { }
+
+    }
+
 }

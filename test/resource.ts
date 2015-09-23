@@ -38,4 +38,35 @@ module test {
 
     }
 
+    let testModule: angular.IModule = angular.module('test');
+
+    @resource(testModule)
+    @inject('$http', '$parse')
+    export class TestResourceWithoutClassName implements ITestModel {
+        // And to keep proper type, you may add "extends at.Resource"
+
+        public static url: string = '/fake/url';
+
+        public name: string;
+        public age: number;
+
+        /* tslint:disable:variable-name */
+        private $$http: angular.IHttpService;
+        private $$parse: angular.IParseService;
+        /* tslint:enable:variable-name */
+
+        constructor(model?: ITestModel) {
+            /* istanbul ignore else */
+            if (model) {
+                this.name = model.name;
+                this.age = model.age;
+            }
+        }
+
+        public getLabel(): string {
+            return this.$$parse('defaults.headers.common.Accept')(this.$$http) + this.name + String(this.age);
+        }
+
+    }
+
 }

@@ -45,5 +45,26 @@ module test {
         }
 
     }
+    let testModule: angular.IModule = angular.module('test');
+    @directive(testModule)
+    export class TestComponent2Controller {
+        public static restrict: string = 'E';
+        public static replace: boolean = true;
+        public static template: string = '<span>Test Component2</span>';
+    }
+
+    @directive('test')
+    export class TestComponent3Ctrl {
+        public static restrict: string = 'A';
+        public static replace: boolean = true;
+        public static template: string = '<span>Test Component3</span>';
+    }
+
+    @directive(testModule)
+    export class TestComponent4 {
+        public static restrict: string = 'C';
+        public static replace: boolean = true;
+        public static template: string = '<span>Test Component4</span>';
+    }
 
 }

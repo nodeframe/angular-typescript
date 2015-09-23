@@ -1,4 +1,3 @@
-
 module at {
 
     'use strict';
@@ -27,9 +26,19 @@ module at {
         (t: any, key: string, index: number): void;
     }
 
-    function instantiate(moduleName: string, name: string, mode: string): IClassAnnotationDecorator {
+    function implicitClassName(target: any): string {
+        let funcNameRegex: any = /function (.{1,})\(/,
+            results: any[] = (funcNameRegex).exec(target.toString());
+        return results[1];
+    }
+
+    function getModule(module: string | angular.IModule): angular.IModule {
+        return ((typeof module === 'string') ? angular.module(module) : module);
+    }
+
+    function instantiate(module: string | angular.IModule, name: string, mode: string): IClassAnnotationDecorator {
         return (target: any): void => {
-            angular.module(moduleName)[mode](name, target);
+            getModule(module)[mode](name || implicitClassName(target), target);
         };
     }
 
@@ -56,49 +65,55 @@ module at {
     }
 
     export interface IServiceAnnotation {
-        (moduleName: string, serviceName: string): IClassAnnotationDecorator;
+        (module: string | angular.IModule, serviceName?: string): IClassAnnotationDecorator;
     }
 
-    export function service(moduleName: string, serviceName: string): at.IClassAnnotationDecorator {
-        return instantiate(moduleName, serviceName, 'service');
+    export function service(module: string | angular.IModule, serviceName?: string): at.IClassAnnotationDecorator {
+        return instantiate(module, serviceName, 'service');
     }
 
     export interface IControllerAnnotation {
-        (moduleName: string, ctrlName: string): IClassAnnotationDecorator;
+        (module: string, ctrlName?: string): IClassAnnotationDecorator;
     }
 
-    export function controller(moduleName: string, ctrlName: string): at.IClassAnnotationDecorator {
-        return instantiate(moduleName, ctrlName, 'controller');
+    export function controller(module: string | angular.IModule, ctrlName?: string): at.IClassAnnotationDecorator {
+        return instantiate(module, ctrlName, 'controller');
     }
 
     export interface IDirectiveAnnotation {
-        (moduleName: string, directiveName: string): IClassAnnotationDecorator;
+        (module: string | angular.IModule, directiveName?: string): IClassAnnotationDecorator;
     }
 
-    export function directive(moduleName: string, directiveName: string): at.IClassAnnotationDecorator {
+    export function directive(module: string | angular.IModule, directiveName?: string): at.IClassAnnotationDecorator {
         return (target: any): void => {
             let config: angular.IDirective;
             /* istanbul ignore else */
             if (target.controller) {
-                controller(moduleName, target.controller.split(' ').shift())(target);
+                controller(module, target.controller.split(' ').shift())(target);
             }
             config = directiveProperties.reduce((
                 config: angular.IDirective,
                 property: string
             ) => {
-                return angular.isDefined(target[property]) ? angular.extend(config, {[property]: target[property]}) :
+                return angular.isDefined(target[property]) ? angular.extend(config, { [property]: target[property] }) :
                     config; /* istanbul ignore next */
-            }, {controller: target, scope: Boolean(target.templateUrl)});
+            }, { controller: target, scope: Boolean(target.templateUrl) });
 
-            angular.module(moduleName).directive(directiveName, () => (config));
+            // Get implicit classname and remove trailing "Controller" or "Ctrl"
+            let implicitDirectiveName: string = implicitClassName(target).replace(/(Controller|Ctrl)$/, '');
+
+            // Lowercase first character 
+            implicitDirectiveName = directiveName || implicitDirectiveName.charAt(0).toLowerCase() + implicitDirectiveName.slice(1);
+
+            getModule(module).directive(directiveName || implicitDirectiveName, () => (config));
         };
     }
 
     export interface IClassFactoryAnnotation {
-        (moduleName: string, className: string): IClassAnnotationDecorator;
+        (moduleName: string | angular.IModule, className?: string): IClassAnnotationDecorator;
     }
 
-    export function classFactory(moduleName: string, className: string): at.IClassAnnotationDecorator {
+    export function classFactory(module: string | angular.IModule, className?: string): at.IClassAnnotationDecorator {
         return (target: any): void => {
             function factory(...args: any[]): any {
                 return at.attachInjects(target, ...args);
@@ -107,9 +122,8 @@ module at {
             if (target.$inject && target.$inject.length > 0) {
                 factory.$inject = target.$inject.slice(0);
             }
-            angular.module(moduleName).factory(className, factory);
+            getModule(module).factory(className || implicitClassName(target), factory);
         };
     }
     /* tslint:enable:no-any */
-
 }
