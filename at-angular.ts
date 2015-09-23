@@ -38,7 +38,11 @@ module at {
 
     function instantiate(module: string | angular.IModule, name: string, mode: string): IClassAnnotationDecorator {
         return (target: any): void => {
-            getModule(module)[mode](name || implicitClassName(target), target);
+            // Get implicit classname
+            let implicitDirectiveName: string = implicitClassName(target);
+            // Lowercase first character 
+            implicitDirectiveName = name || implicitDirectiveName.charAt(0).toLowerCase() + implicitDirectiveName.slice(1);
+            getModule(module)[mode](implicitDirectiveName, target);
         };
     }
 
@@ -105,7 +109,7 @@ module at {
             // Lowercase first character 
             implicitDirectiveName = directiveName || implicitDirectiveName.charAt(0).toLowerCase() + implicitDirectiveName.slice(1);
 
-            getModule(module).directive(directiveName || implicitDirectiveName, () => (config));
+            getModule(module).directive(implicitDirectiveName, () => (config));
         };
     }
 
@@ -122,7 +126,12 @@ module at {
             if (target.$inject && target.$inject.length > 0) {
                 factory.$inject = target.$inject.slice(0);
             }
-            getModule(module).factory(className || implicitClassName(target), factory);
+
+            // Get implicit classname
+            let implicitDirectiveName: string = implicitClassName(target);
+            // Lowercase first character 
+            implicitDirectiveName = className || implicitDirectiveName.charAt(0).toLowerCase() + implicitDirectiveName.slice(1);
+            getModule(module).factory(implicitDirectiveName, factory);
         };
     }
     /* tslint:enable:no-any */

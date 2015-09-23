@@ -9,12 +9,12 @@ describe 'annotations:', ->
     testServiceTwo = null
     testServiceWithoutClassName = null
 
-    beforeEach inject (_$http_, _$parse_, _testServiceTwo_,_TestServiceWithoutClassName_) ->
+    beforeEach inject (_$http_, _$parse_, _testServiceTwo_,_testServiceWithoutClassName_) ->
       deps =
         $http: _$http_
         $parse: _$parse_
       testServiceTwo = _testServiceTwo_
-      testServiceWithoutClassName = _TestServiceWithoutClassName_
+      testServiceWithoutClassName = _testServiceWithoutClassName_
 
     it 'should be defined', ->
 

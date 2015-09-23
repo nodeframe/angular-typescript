@@ -9,10 +9,11 @@ describe 'annotations:', ->
     $parse = null
     TestClassOne = null
 
-    beforeEach inject (_$http_, _$parse_, _TestClassOne_) ->
+    beforeEach inject (_$http_, _$parse_, _TestClassOne_, _testClassFactoryWithoutClassName_) ->
       $http = _$http_
       $parse = _$parse_
       TestClassOne = _TestClassOne_
+      testClassFactoryWithoutClassName = _testClassFactoryWithoutClassName_
 
     it 'should create class as a service', ->
 

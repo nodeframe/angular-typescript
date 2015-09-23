@@ -65,7 +65,11 @@ module at {
                 })), ...args);
             }
             resourceClassFactory.$inject = (['$resource']).concat(target.$inject /* istanbul ignore next */ || []);
-            getModule(module).factory(className || implicitClassName(target), resourceClassFactory);
+            // Get implicit classname
+            let implicitDirectiveName: string = implicitClassName(target);
+            // Lowercase first character 
+            implicitDirectiveName = className || implicitDirectiveName.charAt(0).toLowerCase() + implicitDirectiveName.slice(1);
+            getModule(module).factory(implicitDirectiveName, resourceClassFactory);
         };
     }
     /* tslint:enable:no-any */
