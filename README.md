@@ -23,7 +23,7 @@ What ?
 **angular-typescript** provides annotation like decorators:
 
 ```
-@at.service(module string|angular.IModule, serviceName?: string)
+@at.service(module: string|angular.IModule, serviceName?: string)
 @at.inject(dependencyOne: string, ...dependencies?: string[])
 @at.controller(module: string|angular.IModule, controllerName?: string)
 @at.directive(module: string|angular.IModule, directiveName?: string)
